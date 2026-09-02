@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Explore destinations - AI Travel Planner{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: linear-gradient(180deg, #f7fdfc, #ffffff);">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="section-eyebrow"><i class="bi bi-compass"></i> Explore</span>
+      <h1 class="section-title">Where do you want to wake up?</h1>
+      <p class="section-lead mx-auto">Pick a destination and the planner opens with it filled in.</p>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="search" class="form-control" id="destSearch" placeholder="Search destinations, e.g. beaches or Jaipur">
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-5" id="tagFilters">
+      <button class="btn btn-ghost btn-sm active" data-tag="all">All</button>
+      {% set all_tags = [] %}
+      {% for item in destinations %}{% for tag in item.tags %}
+        {% if tag not in all_tags %}{% set _ = all_tags.append(tag) %}{% endif %}
+      {% endfor %}{% endfor %}
+      {% for tag in all_tags|sort %}
+      <button class="btn btn-ghost btn-sm" data-tag="{{ tag }}">{{ tag }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4" id="destGrid">
+      {% for item in destinations %}
+      <div class="col-sm-6 col-lg-4 dest-item"
+           data-name="{{ item.name|lower }} {{ item.country|lower }} {{ item.tagline|lower }}"
+           data-tags="{{ item.tags|join('|') }}">
+        <article class="card-soft dest-card">
+          <div class="dest-media" style="background: linear-gradient(135deg, {{ item.gradient[0] }}, {{ item.gradient[1] }});">
+            {% if item.image %}
+              <img src="{{ url_for('static', filename='images/' ~ item.image) }}" alt="{{ item.name }}" onerror="this.remove()">
+            {% endif %}
+            <i class="bi {{ item.icon }}"></i>
+            <span class="dest-badge">{{ item.duration }}</span>
+          </div>
+          <div class="dest-body">
+            <div>
+              <h5>{{ item.name }}</h5>
+              <div class="dest-country"><i class="bi bi-geo"></i> {{ item.country }}</div>
+            </div>
+            <p class="dest-desc">{{ item.description }}</p>
+            <div class="dest-meta">
+              <span><i class="bi bi-calendar-check"></i> {{ item.best_time }}</span>
+              <span><i class="bi bi-wallet2"></i> ~₹{{ "{:,}".format(item.avg_budget) }} per person</span>
+            </div>
+            <div class="d-flex flex-wrap gap-1">
+              {% for tag in item.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}
+            </div>
+            <div class="d-flex gap-2 mt-auto pt-2">
+              <button class="btn btn-brand btn-sm flex-grow-1"
+                      data-plan-trip="{{ item.name }}"
+                      data-budget="{{ item.avg_budget }}"
+                      data-interests="{{ item.tags|join(',') }}">
+                Plan Trip <i class="bi bi-arrow-right ms-1"></i>
+              </button>
+              <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener"
+                 href="https://www.google.com/maps/search/?api=1&query={{ item.name|urlencode }}"
+                 aria-label="View {{ item.name }} on a map"><i class="bi bi-map"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="empty-state d-none" id="noResults">
+      <div class="icon"><i class="bi bi-search"></i></div>
+      <h4>No destinations match that</h4>
+      <p>Try another search - or just type your own destination straight into the planner.</p>
+      <a href="{{ url_for('pages.planner') }}" class="btn btn-brand">Open the planner</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/explore.js') }}"></script>
+{% endblock %}

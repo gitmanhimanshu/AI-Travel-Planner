@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Create an account - AI Travel Planner{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="text-center mb-4">
+      <div class="brand-mark mx-auto mb-3"><i class="bi bi-send-fill"></i></div>
+      <h3 class="mb-1">Create your account</h3>
+      <p class="text-muted-soft mb-0">Free, and your trips stay saved.</p>
+    </div>
+
+    <form id="registerForm" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="name">Name</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-person"></i></span>
+          <input type="text" class="form-control" id="name" name="name" required
+                 autocomplete="name" placeholder="Your name" maxlength="120">
+        </div>
+        <div class="invalid-feedback">Enter your name.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="email">Email</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+          <input type="email" class="form-control" id="email" name="email" required
+                 autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="invalid-feedback">Enter a valid email address.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input type="password" class="form-control" id="password" name="password" required
+                 autocomplete="new-password" placeholder="At least 8 characters">
+          <button class="btn btn-ghost" type="button" data-toggle-password="password" aria-label="Show password">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+        <div class="invalid-feedback">Use at least 8 characters.</div>
+      </div>
+
+      <button type="submit" class="btn btn-brand w-100 py-2" id="registerBtn">Create account</button>
+    </form>
+
+    <p class="text-center text-muted-soft small mt-4 mb-0">
+      Already have an account? <a href="{{ url_for('pages.login') }}" class="fw-semibold">Log in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block title %}Plan a trip - AI Travel Planner{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: linear-gradient(180deg, #f7fdfc, #ffffff);">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="section-eyebrow"><i class="bi bi-sliders"></i> Trip planner</span>
+      <h1 class="section-title">Tell us about your trip</h1>
+      <p class="section-lead mx-auto">The more you share, the better the plan. Only destination, starting city and dates are required.</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-xl-9">
+
+        <!-- ===================== FORM ===================== -->
+        <form id="plannerForm" class="form-panel" novalidate>
+
+          <!-- Step 1: where -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">1</span>
+              <div><h5>Where are you going?</h5><small>Destination and where you are starting from.</small></div>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="destination">Destination</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                  <input type="text" class="form-control" id="destination" name="destination"
+                         list="destinationList" placeholder="e.g. Manali" required maxlength="160">
+                </div>
+                <datalist id="destinationList">
+                  {% for item in destinations %}<option value="{{ item.name }}">{{ item.country }}</option>{% endfor %}
+                </datalist>
+                <div class="invalid-feedback">Please enter where you want to go.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="start_location">Starting city</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-house"></i></span>
+                  <input type="text" class="form-control" id="start_location" name="start_location"
+                         placeholder="e.g. Delhi" required maxlength="160">
+                </div>
+                <div class="invalid-feedback">Please enter your starting city.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: when / who -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">2</span>
+              <div><h5>When, and how many of you?</h5><small>Duration is calculated for you.</small></div>
+            </div>
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label" for="start_date">Start date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                <div class="invalid-feedback">Pick a start date.</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="end_date">End date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required>
+                <div class="invalid-feedback">End date must be on or after the start date.</div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="travelers">Travellers</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-people"></i></span>
+                  <input type="number" class="form-control" id="travelers" name="travelers"
+                         value="2" min="1" max="30" required>
+                </div>
+                <div class="invalid-feedback">Enter between 1 and 30 travellers.</div>
+              </div>
+              <div class="col-12">
+                <div class="duration-note d-none" id="durationNote">
+                  <i class="bi bi-calendar-range me-1"></i> <span id="durationText"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: budget -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">3</span>
+              <div><h5>What is your budget?</h5><small>Pick a level, and add an exact figure if you have one.</small></div>
+            </div>
+            <div class="budget-cards mb-3">
+              {% set levels = [
+                ('budget', 'bi-piggy-bank', 'Budget', 'Hostels, buses, street food'),
+                ('moderate', 'bi-cash-stack', 'Moderate', '3-star stays, mix of everything'),
+                ('luxury', 'bi-gem', 'Luxury', 'Premium hotels, private transfers')
+              ] %}
+              {% for value, icon, label, hint in levels %}
+              <label class="budget-card">
+                <input type="radio" name="budget_level" value="{{ value }}" {% if value == 'moderate' %}checked{% endif %}>
+                <span>
+                  <i class="bi {{ icon }}"></i>
+                  <strong>{{ label }}</strong>
+                  <small>{{ hint }}</small>
+                </span>
+              </label>
+              {% endfor %}
+            </div>
+            <label class="form-label" for="budget_amount">Exact budget (optional, total for the group)</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input type="number" class="form-control" id="budget_amount" name="budget_amount"
+                     min="0" step="500" placeholder="e.g. 30000">
+            </div>
+            <div class="form-text">Give a number and we will flag the plan if it goes over.</div>
+          </div>
+
+          <!-- Step 4: style -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">4</span>
+              <div><h5>How do you like to travel?</h5><small>Pick up to 5.</small></div>
+            </div>
+            <div class="chip-grid">
+              {% set styles = [
+                ('adventure', 'bi-lightning-charge', 'Adventure'),
+                ('relaxation', 'bi-cup-hot', 'Relaxation'),
+                ('family', 'bi-people', 'Family'),
+                ('romantic', 'bi-heart', 'Romantic'),
+                ('solo', 'bi-person', 'Solo'),
+                ('backpacking', 'bi-backpack', 'Backpacking'),
+                ('luxury', 'bi-gem', 'Luxury'),
+                ('cultural', 'bi-bank', 'Cultural'),
+                ('food & travel', 'bi-egg-fried', 'Food & Travel')
+              ] %}
+              {% for value, icon, label in styles %}
+              <label class="chip">
+                <input type="checkbox" name="travel_style" value="{{ value }}" data-max="5">
+                <span><i class="bi {{ icon }}"></i>{{ label }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Step 5: interests -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">5</span>
+              <div><h5>What are you into?</h5><small>Pick up to 8 - this shapes the daily activities.</small></div>
+            </div>
+            <div class="chip-grid">
+              {% set interests = [
+                ('nature', 'bi-tree', 'Nature'),
+                ('mountains', 'bi-triangle', 'Mountains'),
+                ('beaches', 'bi-umbrella', 'Beaches'),
+                ('historical places', 'bi-bank2', 'Historical Places'),
+                ('food', 'bi-egg-fried', 'Food'),
+                ('shopping', 'bi-bag', 'Shopping'),
+                ('nightlife', 'bi-moon-stars', 'Nightlife'),
+                ('trekking', 'bi-signpost-split', 'Trekking'),
+                ('photography', 'bi-camera', 'Photography'),
+                ('museums', 'bi-building', 'Museums'),
+                ('local culture', 'bi-globe-asia-australia', 'Local Culture')
+              ] %}
+              {% for value, icon, label in interests %}
+              <label class="chip">
+                <input type="checkbox" name="interests" value="{{ value }}" data-max="8">
+                <span><i class="bi {{ icon }}"></i>{{ label }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Step 6: logistics -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">6</span>
+              <div><h5>Getting there and staying</h5><small>Optional, but it makes the costs more accurate.</small></div>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label d-block">Transportation</label>
+                <div class="chip-grid">
+                  {% set transports = [
+                    ('flight', 'bi-airplane', 'Flight'),
+                    ('train', 'bi-train-front', 'Train'),
+                    ('bus', 'bi-bus-front', 'Bus'),
+                    ('car', 'bi-car-front', 'Car'),
+                    ('bike', 'bi-bicycle', 'Bike')
+                  ] %}
+                  {% for value, icon, label in transports %}
+                  <label class="chip">
+                    <input type="radio" name="transportation" value="{{ value }}">
+                    <span><i class="bi {{ icon }}"></i>{{ label }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label d-block">Accommodation</label>
+                <div class="chip-grid">
+                  {% set stays = [
+                    ('hotel', 'bi-building', 'Hotel'),
+                    ('hostel', 'bi-people', 'Hostel'),
+                    ('resort', 'bi-tree', 'Resort'),
+                    ('homestay', 'bi-house-heart', 'Homestay'),
+                    ('budget stay', 'bi-piggy-bank', 'Budget Stay')
+                  ] %}
+                  {% for value, icon, label in stays %}
+                  <label class="chip">
+                    <input type="radio" name="accommodation" value="{{ value }}">
+                    <span><i class="bi {{ icon }}"></i>{{ label }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 7: notes -->
+          <div class="form-step">
+            <div class="form-step-title">
+              <span class="num">7</span>
+              <div><h5>Anything else?</h5><small>Accessibility needs, food preferences, places to avoid.</small></div>
+            </div>
+            <textarea class="form-control" id="notes" name="notes" rows="4" maxlength="1200"
+                      placeholder="I want to visit peaceful places and avoid crowded tourist locations."></textarea>
+            <div class="form-text"><span id="notesCount">0</span>/1200</div>
+          </div>
+
+          <div class="pt-4 text-center">
+            <button type="submit" class="btn btn-brand btn-lg w-100 py-3" id="generateBtn">
+              Generate My Trip ✨
+            </button>
+            {% if not current_user %}
+            <p class="form-text mt-3 mb-0">
+              <i class="bi bi-info-circle"></i>
+              You can generate without an account -
+              <a href="{{ url_for('pages.login') }}">log in</a> to save trips.
+            </p>
+            {% endif %}
+          </div>
+        </form>
+
+        <!-- ===================== LOADING ===================== -->
+        <div class="form-panel d-none" id="loadingPanel">
+          <div class="ai-loader">
+            <div class="orbit"><i class="bi bi-stars"></i></div>
+            <h4>✨ AI is planning your perfect trip...</h4>
+            <p id="loadingSubtitle">This usually takes 30-60 seconds. Please keep this tab open.</p>
+            <ul class="loader-steps" id="loaderSteps">
+              <li data-step><i class="bi bi-circle"></i> Reading your preferences</li>
+              <li data-step><i class="bi bi-circle"></i> Choosing places that fit your interests</li>
+              <li data-step><i class="bi bi-circle"></i> Building a realistic day-by-day route</li>
+              <li data-step><i class="bi bi-circle"></i> Estimating costs and checking your budget</li>
+              <li data-step><i class="bi bi-circle"></i> Writing tips and a packing list</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ===================== ERROR ===================== -->
+        <div class="form-panel d-none" id="errorPanel">
+          <div class="empty-state">
+            <div class="icon text-danger"><i class="bi bi-exclamation-triangle"></i></div>
+            <h4>We could not build that plan</h4>
+            <p id="errorMessage">Something went wrong. Please try again.</p>
+            <button class="btn btn-brand" id="retryBtn"><i class="bi bi-arrow-clockwise me-1"></i> Try again</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/planner.js') }}"></script>
+{% endblock %}

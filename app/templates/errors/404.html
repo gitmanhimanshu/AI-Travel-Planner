@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Page not found - AI Travel Planner{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="empty-state" style="padding-top: 6rem;">
+    <div class="icon"><i class="bi bi-compass"></i></div>
+    <h1 class="display-5 fw-bold">404</h1>
+    <h4>This page took a different route</h4>
+    <p>The page you asked for does not exist. Let's get you back on the map.</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <a href="{{ url_for('pages.index') }}" class="btn btn-brand">Back home</a>
+      <a href="{{ url_for('pages.planner') }}" class="btn btn-ghost">Plan a trip</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

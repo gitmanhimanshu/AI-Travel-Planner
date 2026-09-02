@@ -1,0 +1,15 @@
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+Flask-Cors==4.0.1
+SQLAlchemy==2.0.36
+python-dotenv==1.0.1
+Werkzeug==3.0.4
+requests==2.32.3
+
+# AI provider - install the one you use (google-genai is the default)
+google-genai>=1.0.0
+# anthropic>=1.2.0
+
+# Production extras (uncomment when deploying with PostgreSQL)
+# psycopg[binary]==3.2.3
+# gunicorn==23.0.0

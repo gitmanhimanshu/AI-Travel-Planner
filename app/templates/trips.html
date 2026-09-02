@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}My trips - AI Travel Planner{% endblock %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="section-eyebrow"><i class="bi bi-suitcase2"></i> My trips</span>
+        <h1 class="section-title mb-1">Saved itineraries</h1>
+        <p class="section-lead mb-0">Everything you have generated while signed in.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <div class="btn-group" role="group" id="tripFilters">
+          <button class="btn btn-ghost btn-sm active" data-filter="all">All</button>
+          <button class="btn btn-ghost btn-sm" data-filter="favorites">Favourites</button>
+        </div>
+        <a href="{{ url_for('pages.planner') }}" class="btn btn-brand btn-sm"><i class="bi bi-plus-lg me-1"></i> New trip</a>
+      </div>
+    </div>
+
+    <!-- Skeletons -->
+    <div class="row g-4" id="tripsLoading">
+      {% for _ in range(3) %}
+      <div class="col-sm-6 col-lg-4"><div class="skeleton skeleton-card" style="height: 230px;"></div></div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4 d-none" id="tripsGrid"></div>
+
+    <div class="empty-state d-none" id="tripsEmpty">
+      <div class="icon"><i class="bi bi-suitcase"></i></div>
+      <h4>No saved trips yet</h4>
+      <p>Generate an itinerary while you are signed in and it will be waiting here.</p>
+      <a href="{{ url_for('pages.planner') }}" class="btn btn-brand"><i class="bi bi-stars me-1"></i> Plan my first trip</a>
+    </div>
+  </div>
+</section>
+
+<!-- Delete confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 18px; border: none;">
+      <div class="modal-body p-4 text-center">
+        <div class="icon-badge mx-auto" style="background:#fee2e2;color:#dc2626;"><i class="bi bi-trash3"></i></div>
+        <h5 class="mb-2">Delete this trip?</h5>
+        <p class="text-muted-soft" id="deleteText">This removes the itinerary permanently.</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-danger" id="confirmDelete">Delete trip</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/trips.js') }}"></script>
+{% endblock %}

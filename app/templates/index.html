@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block title %}AI Travel Planner - Plan your perfect trip with AI{% endblock %}
+
+{% block content %}
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="section-eyebrow"><i class="bi bi-stars"></i> Powered by Claude</span>
+        <h1 class="hero-title">Plan Your Perfect Trip <span class="text-gradient">With AI</span></h1>
+        <p class="hero-lead">
+          Tell us where you are going, how long you have and what you can spend.
+          You get a day-by-day itinerary with real activities, restaurants,
+          transport and an honest budget breakdown - in about a minute.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{{ url_for('pages.planner') }}" class="btn btn-brand btn-hero">
+            Plan My Trip <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+          <a href="{{ url_for('pages.explore') }}" class="btn btn-ghost btn-hero">
+            <i class="bi bi-compass me-1"></i> Explore destinations
+          </a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>12+</strong><span>Curated destinations</span></div>
+          <div class="hero-stat"><strong>60 sec</strong><span>Average plan time</span></div>
+          <div class="hero-stat"><strong>₹</strong><span>Costs in your currency</span></div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="position-relative px-lg-4">
+          <div class="hero-chip hero-chip--budget"><i class="bi bi-wallet2"></i> Budget: ₹28,000 of ₹30,000</div>
+          <div class="hero-chip hero-chip--weather"><i class="bi bi-cloud-sun"></i> 18°C, clear skies</div>
+
+          <div class="hero-card">
+            <div class="hero-card-head">
+              <small>5-day trip</small>
+              <h4 class="text-white mb-0">Manali, Himachal</h4>
+            </div>
+            <div class="hero-day">
+              <div class="dot">D1</div>
+              <p><strong>Arrival &amp; Mall Road</strong><br><span>Check in, hot lunch, evening walk</span></p>
+            </div>
+            <div class="hero-day">
+              <div class="dot">D2</div>
+              <p><strong>Solang Valley</strong><br><span>Paragliding, cable car, sunset point</span></p>
+            </div>
+            <div class="hero-day">
+              <div class="dot">D3</div>
+              <p><strong>Atal Tunnel &amp; Sissu</strong><br><span>Full-day drive with snow stops</span></p>
+            </div>
+            <div class="hero-day">
+              <div class="dot">D4</div>
+              <p><strong>Jogini Falls trek</strong><br><span>Morning trek, Old Manali cafes</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== POPULAR DESTINATIONS ====================== -->
+<section class="section">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-5">
+      <div>
+        <span class="section-eyebrow"><i class="bi bi-geo-alt"></i> Popular right now</span>
+        <h2 class="section-title">Places travellers are planning</h2>
+        <p class="section-lead mb-0">Pick one and the planner form fills itself in.</p>
+      </div>
+      <a href="{{ url_for('pages.explore') }}" class="btn btn-ghost">See all <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+
+    <div class="row g-4">
+      {% for item in destinations %}
+      <div class="col-sm-6 col-lg-4" data-reveal>
+        <article class="card-soft dest-card">
+          <div class="dest-media" style="background: linear-gradient(135deg, {{ item.gradient[0] }}, {{ item.gradient[1] }});">
+            {% if item.image %}
+              <img src="{{ url_for('static', filename='images/' ~ item.image) }}" alt="{{ item.name }}"
+                   onerror="this.remove()">
+            {% endif %}
+            <i class="bi {{ item.icon }}"></i>
+            <span class="dest-badge">{{ item.duration }}</span>
+          </div>
+          <div class="dest-body">
+            <div>
+              <h5>{{ item.name }}</h5>
+              <div class="dest-country"><i class="bi bi-geo"></i> {{ item.country }}</div>
+            </div>
+            <p class="dest-desc">{{ item.tagline }}</p>
+            <div class="dest-meta">
+              <span><i class="bi bi-calendar-check"></i> {{ item.best_time }}</span>
+              <span><i class="bi bi-wallet2"></i> ~₹{{ "{:,}".format(item.avg_budget) }}</span>
+            </div>
+            <div class="d-flex flex-wrap gap-1">
+              {% for tag in item.tags %}<span class="tag-pill">{{ tag }}</span>{% endfor %}
+            </div>
+            <button class="btn btn-ghost btn-sm w-100 mt-auto"
+                    data-plan-trip="{{ item.name }}"
+                    data-budget="{{ item.avg_budget }}"
+                    data-interests="{{ item.tags|join(',') }}">
+              Plan trip <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ========================= HOW IT WORKS ========================= -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow"><i class="bi bi-diagram-3"></i> How it works</span>
+      <h2 class="section-title">Three steps to a full itinerary</h2>
+      <p class="section-lead mx-auto">No account needed to try it. Sign in when you want to keep your trips.</p>
+    </div>
+
+    <div class="row g-4 g-lg-5">
+      <div class="col-md-4" data-reveal>
+        <div class="card-soft step-card">
+          <div class="step-number">1</div>
+          <h5>Tell us your trip</h5>
+          <p class="text-muted-soft mb-0">Destination, dates, travellers, budget, the style of travel you enjoy and anything you want to avoid.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-reveal>
+        <div class="card-soft step-card">
+          <div class="step-number">2</div>
+          <h5>AI builds the plan</h5>
+          <p class="text-muted-soft mb-0">A realistic day-by-day schedule - nothing hours apart on the same day, with a cost against every line.</p>
+        </div>
+      </div>
+      <div class="col-md-4" data-reveal>
+        <div class="card-soft step-card">
+          <div class="step-number">3</div>
+          <h5>Refine and save</h5>
+          <p class="text-muted-soft mb-0">Ask the assistant to change anything, optimise the budget, get a packing list, then save the trip.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FEATURES ============================ -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow"><i class="bi bi-stars"></i> Features</span>
+      <h2 class="section-title">Everything a trip needs, in one place</h2>
+    </div>
+
+    <div class="row g-4">
+      {% set features = [
+        ('bi-map', 'Day-by-day itinerary', 'Morning, afternoon and evening for every single day, with times and travel logic that actually works.'),
+        ('bi-wallet2', 'Honest budget breakdown', 'Transport, stay, food, activities and buffer - compared against what you said you can spend.'),
+        ('bi-scissors', 'Budget optimiser', 'Over budget? Get specific swaps that bring the number down without gutting the trip.'),
+        ('bi-chat-dots', 'Travel assistant', 'Ask anything about your plan - a rainy Day 3, a quieter beach, a cheaper dinner.'),
+        ('bi-bag-check', 'Packing assistant', 'A list built from your destination, season, trip length and planned activities.'),
+        ('bi-cloud-sun', 'Live weather', 'Current conditions and a 7-day forecast for the place you are heading to.')
+      ] %}
+      {% for icon, title, body in features %}
+      <div class="col-md-6 col-lg-4" data-reveal>
+        <div class="card-soft p-4">
+          <div class="icon-badge {% if loop.index % 3 == 0 %}warm{% endif %}"><i class="bi {{ icon }}"></i></div>
+          <h5>{{ title }}</h5>
+          <p class="text-muted-soft mb-0">{{ body }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ========================== TESTIMONIALS ========================== -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-eyebrow"><i class="bi bi-quote"></i> Testimonials</span>
+      <h2 class="section-title">What travellers say</h2>
+    </div>
+
+    <div class="row g-4">
+      {% set reviews = [
+        ('Ananya R.', 'Bengaluru', 'Planned a 6-day Kerala trip in one sitting. The budget split was within a few hundred rupees of what we actually spent.'),
+        ('Rohit M.', 'Delhi', 'I liked that it did not stack far-apart places into one day. That is exactly the mistake I make when I plan myself.'),
+        ('Sara K.', 'Mumbai', 'The assistant rewrote Day 3 for rain in about ten seconds. Saved our Manali trip.')
+      ] %}
+      {% for name, city, quote in reviews %}
+      <div class="col-md-4" data-reveal>
+        <div class="card-soft testimonial">
+          <div class="stars">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+          </div>
+          <p>"{{ quote }}"</p>
+          <div class="who">
+            <span class="avatar">{{ name[0] }}</span>
+            <div><strong>{{ name }}</strong><span>{{ city }}</span></div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CTA ============================== -->
+<section class="pb-5">
+  <div class="container">
+    <div class="cta-band text-center" data-reveal>
+      <h2 class="mb-3">Ready to plan your next trip?</h2>
+      <p class="mb-4 mx-auto" style="max-width: 540px; color: rgba(255,255,255,.9);">
+        It takes about a minute, and you can change anything afterwards.
+      </p>
+      <a href="{{ url_for('pages.planner') }}" class="btn btn-light btn-lg px-4 fw-semibold text-teal">
+        <i class="bi bi-stars me-1"></i> Generate my itinerary
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // "Plan trip" on a destination card prefills the planner form.
+  document.querySelectorAll("[data-plan-trip]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      App.savePrefill({
+        destination: button.dataset.planTrip,
+        budget_amount: button.dataset.budget,
+        interests: (button.dataset.interests || "").split(",").filter(Boolean),
+      });
+      window.location.href = "{{ url_for('pages.planner') }}";
+    });
+  });
+</script>
+{% endblock %}

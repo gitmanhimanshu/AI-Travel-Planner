@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong - AI Travel Planner{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="empty-state" style="padding-top: 6rem;">
+    <div class="icon text-danger"><i class="bi bi-exclamation-triangle"></i></div>
+    <h1 class="display-5 fw-bold">500</h1>
+    <h4>Something went wrong on our side</h4>
+    <p>{{ message or "We hit an unexpected error. Please try again in a moment." }}</p>
+    <a href="{{ url_for('pages.index') }}" class="btn btn-brand">Back home</a>
+  </div>
+</div>
+{% endblock %}
